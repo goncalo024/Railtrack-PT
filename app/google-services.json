@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "806174231146",
+    "firebase_url": "https://guia-caminhos-de-ferro-default-rtdb.firebaseio.com",
+    "project_id": "guia-caminhos-de-ferro",
+    "storage_bucket": "guia-caminhos-de-ferro.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:806174231146:android:1772fba29329deb8331813",
+        "android_client_info": {
+          "package_name": "com.example.guiacaminhosferro"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyABu_q0hIS4tLVWtlvKt9mwChd7v47IPeg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

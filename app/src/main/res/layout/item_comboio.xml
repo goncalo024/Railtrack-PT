@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="8dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/txtNumeroComboio"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Nº Comboio"
+        android:textStyle="bold"
+        android:textSize="16sp"/>
+
+    <TextView
+        android:id="@+id/txtHorario"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Horário"
+        android:layout_marginTop="4dp"/>
+
+    <TextView
+        android:id="@+id/txtTipoComboio"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tipo"
+        android:layout_marginTop="4dp"/>
+
+    <TextView
+        android:id="@+id/txtPlataforma"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Plataforma"
+        android:layout_marginTop="4dp"/>
+
+</LinearLayout>
