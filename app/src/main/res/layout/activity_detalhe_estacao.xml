@@ -22,18 +22,24 @@
         android:clipToPadding="false"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="16dp">
 
-            <!-- ViewPager para imagens -->
-            <androidx.viewpager2.widget.ViewPager2
-                android:id="@+id/viewPagerImagens"
+            <!-- Container que vamos esconder se não houver imagens -->
+            <FrameLayout
+                android:id="@+id/imageContainer"
                 android:layout_width="match_parent"
-                android:layout_height="200dp" />
+                android:layout_height="220dp"
+                android:layout_marginTop="16dp">
+
+                <androidx.viewpager2.widget.ViewPager2
+                    android:id="@+id/viewPagerImagens"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+            </FrameLayout>
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -62,35 +68,37 @@
 
             <TextView
                 android:id="@+id/estacaoMorada"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"/>
 
             <TextView
                 android:id="@+id/estacaoDescricao"
-                android:layout_marginTop="8dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp" />
 
-            <!-- Botões de ação -->
+            <!-- Botões de ação, todos com o mesmo marginTop -->
             <Button
                 android:id="@+id/botaoContextoHistorico"
                 android:text="Contexto Histórico"
-                android:layout_marginTop="12dp"
+                android:layout_marginTop="16dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
             <Button
                 android:id="@+id/botaoVerRota"
                 android:text="Ver Rota"
+                android:layout_marginTop="16dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
             <Button
                 android:id="@+id/btnVerHorarios"
+                android:text="Ver Horários"
+                android:layout_marginTop="16dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Ver Horários"
-                android:layout_marginTop="24dp"
                 android:backgroundTint="?attr/colorPrimary"
                 android:textColor="@android:color/white"/>
 
@@ -103,7 +111,8 @@
                 android:gravity="center_vertical"
                 android:padding="12dp"
                 android:clickable="true"
-                android:focusable="true">
+                android:focusable="true"
+                android:layout_marginTop="24dp">
 
                 <TextView
                     android:id="@+id/avaliacoesTitle"
@@ -124,7 +133,6 @@
                     android:id="@+id/setaToggle"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    android:layout_gravity="end"
                     android:layout_marginStart="8dp"
                     android:src="@drawable/ic_arrow_down" />
             </LinearLayout>
@@ -151,7 +159,7 @@
                         android:textSize="18sp"
                         android:layout_marginBottom="8dp"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
+                        android:layout_height="wrap_content" />
 
                     <RatingBar
                         android:id="@+id/estacaoRatingBar"
@@ -170,11 +178,13 @@
                     <Button
                         android:id="@+id/enviarComentarioButton"
                         android:text="Enviar Comentário"
-                        android:layout_width="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"/>
 
-                    <TextView
+                    <LinearLayout
                         android:id="@+id/comentariosListagem"
+                        android:orientation="vertical"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"/>
@@ -182,5 +192,4 @@
             </LinearLayout>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
-
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

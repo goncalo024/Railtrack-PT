@@ -3,41 +3,42 @@ package com.example.guiacaminhosferro
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.view.Gravity
 import android.view.View
-import android.view.ViewGroup
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.RatingBar
-import android.widget.TextView
-import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
-import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.WindowInsetsControllerCompat
+import com.google.android.material.appbar.MaterialToolbar
 import androidx.viewpager2.widget.ViewPager2
-import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
-import com.example.guiacaminhosferro.HorariosActivity
+import com.google.firebase.database.*
 
 class DetalheEstacaoActivity : AppCompatActivity() {
 
-    // 1) Só DECLARA dentro da classe, sem duplicar no topo do ficheiro:
+    // Firebase
     private lateinit var auth: FirebaseAuth
     private lateinit var database: DatabaseReference
+
+    // Views
+    private lateinit var viewPager: ViewPager2
+    private lateinit var imageContainer: View
+    private lateinit var btnContexto: Button
+    private lateinit var btnRota: Button
+    private lateinit var btnHorarios: Button
+
+    private lateinit var headerAvaliacoes: LinearLayout
+    private lateinit var contentAvaliacoes: LinearLayout
+    private lateinit var setaToggle: ImageView
+
+    private lateinit var edtComentario: EditText
+    private lateinit var ratingBar: RatingBar
+    private lateinit var btnEnviar: Button
+    private lateinit var comentariosListagem: LinearLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_detalhe_estacao)
 
-        // 2) Inicializa **logo** no início do onCreate:
+        // 2) Inicializa Firebase
         auth = FirebaseAuth.getInstance()
         database = FirebaseDatabase.getInstance().reference
 
@@ -49,7 +50,7 @@ class DetalheEstacaoActivity : AppCompatActivity() {
             return
         }
 
-        // 4) Agora lê os restantes extras em segurança
+        // 4) Extras
         val nome              = intent.getStringExtra("nome").orEmpty()
         val morada            = intent.getStringExtra("morada").orEmpty()
         val descricao         = intent.getStringExtra("descricao").orEmpty()
@@ -59,9 +60,10 @@ class DetalheEstacaoActivity : AppCompatActivity() {
         val imagensLista      = intent.getStringArrayListExtra("imagens") ?: arrayListOf()
 
         // 5) Toolbar com voltar
-        findViewById<Toolbar>(R.id.toolbarDetalhe).apply {
+        findViewById<MaterialToolbar>(R.id.toolbarDetalhe).apply {
             setNavigationIcon(R.drawable.ic_arrow_back)
             setNavigationOnClickListener { finish() }
+            title = nome
         }
 
         // 6) Preenche textos
@@ -69,12 +71,19 @@ class DetalheEstacaoActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.estacaoMorada).text    = morada
         findViewById<TextView>(R.id.estacaoDescricao).text = descricao
 
-        // 7) ViewPager de imagens
-        findViewById<ViewPager2>(R.id.viewPagerImagens).adapter =
-            ImagePagerAdapter(this, imagensLista)
+        // 7) ViewPager de imagens + esconder se não houver
+        imageContainer = findViewById(R.id.imageContainer)
+        viewPager      = findViewById(R.id.viewPagerImagens)
+
+        if (imagensLista.isEmpty()) {
+            imageContainer.visibility = View.GONE
+        } else {
+            imageContainer.visibility = View.VISIBLE
+            viewPager.adapter         = ImagePagerAdapter(this, imagensLista)
 
         // 8) Botão contexto histórico
-        findViewById<Button>(R.id.botaoContextoHistorico).setOnClickListener {
+        btnContexto = findViewById(R.id.botaoContextoHistorico)
+        btnContexto.setOnClickListener {
             Intent(this, ContextoHistoricoActivity::class.java).also {
                 it.putExtra("nome", nome)
                 it.putExtra("contextoHistorico", contextoHistorico)
@@ -84,33 +93,33 @@ class DetalheEstacaoActivity : AppCompatActivity() {
         }
 
         // 9) Botão rota
-        findViewById<Button>(R.id.botaoVerRota).setOnClickListener {
+        btnRota = findViewById(R.id.botaoVerRota)
+        btnRota.setOnClickListener {
             if (!latitude.isNullOrEmpty() && !longitude.isNullOrEmpty()) {
                 val uri = Uri.parse("geo:0,0?q=$latitude,$longitude($nome)")
-                Intent(Intent.ACTION_VIEW, uri).apply {
-                    setPackage("com.google.android.apps.maps")
-                }.let { mapIntent ->
-                    startActivity(
-                        if (mapIntent.resolveActivity(packageManager) != null)
-                            mapIntent
-                        else
-                            Intent(Intent.ACTION_VIEW, uri)
-                    )
-                }
+                val mapIntent = Intent(Intent.ACTION_VIEW, uri)
+                    .setPackage("com.google.android.apps.maps")
+                startActivity(
+                    if (mapIntent.resolveActivity(packageManager) != null)
+                        mapIntent else Intent(Intent.ACTION_VIEW, uri)
+                )
             } else {
                 Toast.makeText(this, "Coordenadas indisponíveis.", Toast.LENGTH_SHORT).show()
             }
         }
 
-        // 10) Botão horários
-        findViewById<Button>(R.id.btnVerHorarios).setOnClickListener {
+        // 10) Botão horários (remove margem extra)
+        btnHorarios = findViewById(R.id.btnVerHorarios)
+        // se queres manter a mesma aparência dos outros, podes remover o marginTop no XML
+        btnHorarios.setOnClickListener {
             Intent(this, HorariosActivity::class.java).apply {
                 putExtra("estacaoId", estacaoId)
+                putExtra("stationName", nome)
                 startActivity(this)
             }
         }
 
-        // 11) FAVORITOS (usa auth e database já inicializados)
+        // 11) FAVORITOS
         val user = auth.currentUser
         if (user != null) {
             val btnFavorito = findViewById<ImageView>(R.id.botaoFavorito)
@@ -128,51 +137,153 @@ class DetalheEstacaoActivity : AppCompatActivity() {
                 atualizarIcone()
             }
             btnFavorito.setOnClickListener {
-                if (isFav) favRef.removeValue()
-                else favRef.setValue(true)
+                if (isFav) favRef.removeValue() else favRef.setValue(true)
                 isFav = !isFav
                 atualizarIcone()
             }
         }
 
-        // 12) COMENTÁRIOS
-        val edtComentario  = findViewById<EditText>(R.id.editarComentario)
-        val ratingBar      = findViewById<RatingBar>(R.id.estacaoRatingBar)
-        val btnEnviar      = findViewById<Button>(R.id.enviarComentarioButton)
-        val txtComentarios = findViewById<TextView>(R.id.comentariosListagem)
+        // 12) COMENTÁRIOS: bind views e toggle
+        headerAvaliacoes   = findViewById(R.id.avaliacoesHeader)
+        contentAvaliacoes  = findViewById(R.id.avaliacoesContent)
+        setaToggle         = findViewById(R.id.setaToggle)
 
+        comentariosListagem = findViewById(R.id.comentariosListagem)
+
+        edtComentario      = findViewById(R.id.editarComentario)
+        ratingBar          = findViewById(R.id.estacaoRatingBar)
+        btnEnviar          = findViewById(R.id.enviarComentarioButton)
+
+        headerAvaliacoes.setOnClickListener {
+            if (contentAvaliacoes.visibility == View.GONE) {
+                contentAvaliacoes.visibility = View.VISIBLE
+                setaToggle.setImageResource(R.drawable.ic_arrow_up)
+            } else {
+                contentAvaliacoes.visibility = View.GONE
+                setaToggle.setImageResource(R.drawable.ic_arrow_down)
+            }
+        }
+
+        // função para mostrar o contador dinamicamente
+        fun atualizarContagem(total: Long) {
+            findViewById<TextView>(R.id.avaliacoesTitle).text =
+                "Avaliações ($total)"
+        }
+
+        // Função para carregar comentários
         fun carregarComentarios() {
-            database.child("Comentarios").child(estacaoId).get()
+            comentariosListagem.removeAllViews()
+            database.child("Comentarios")
+                .child(estacaoId)
+                .get()
                 .addOnSuccessListener { snap ->
-                    val sb = StringBuilder()
+                    atualizarContagem(snap.childrenCount)
                     snap.children.forEach { c ->
-                        val n  = c.child("nome").value.toString()
-                        val t  = c.child("comentario").value.toString()
-                        val av = c.child("avaliacao").value.toString().toIntOrNull() ?: 0
-                        sb.append("⭐".repeat(av))
-                            .append("\n$n: $t\n\n")
+                        val nome  = c.child("nome").getValue(String::class.java) ?: "Anónimo"
+                        val texto = c.child("comentario").getValue(String::class.java) ?: ""
+                        val av    = c.child("avaliacao").getValue(Int::class.java) ?: 0
+                        val uid   = c.key
+
+                        // linha horizontal
+                        val row = LinearLayout(this).apply {
+                            orientation = LinearLayout.HORIZONTAL
+                            layoutParams = LinearLayout.LayoutParams(
+                                LinearLayout.LayoutParams.MATCH_PARENT,
+                                LinearLayout.LayoutParams.WRAP_CONTENT
+                            ).apply { setMargins(0,8,0,8) }
+                            gravity = Gravity.CENTER_VERTICAL
+                        }
+                        // estrelas
+                        val stars = RatingBar(this,null,android.R.attr.ratingBarStyleSmall).apply {
+                            numStars = 5
+                            stepSize = 1f
+                            rating   = av.toFloat()
+                            setIsIndicator(true)
+                        }
+                        row.addView(stars)
+                        // texto
+                        val tv = TextView(this).apply {
+                            text = "$nome: $texto"
+                            setPadding(16,0,0,0)
+                            layoutParams = LinearLayout.LayoutParams(0,
+                                LinearLayout.LayoutParams.WRAP_CONTENT,1f)
+                        }
+                        row.addView(tv)
+                        // ícone de lixo para o próprio
+                        if (auth.currentUser?.uid == uid) {
+                            val del = ImageButton(this).apply {
+                                setImageResource(R.drawable.ic_delete)
+                                background = null
+                                setOnClickListener {
+                                    database.child("Comentarios")
+                                        .child(estacaoId)
+                                        .child(uid!!)
+                                        .removeValue()
+                                        .addOnSuccessListener { carregarComentarios() }
+                                }
+                            }
+                            row.addView(del)
+                        }
+                        comentariosListagem.addView(row)
                     }
-                    txtComentarios.text = sb.toString()
+                    // se não houver, mostramos só uma label
+                    if (snap.childrenCount == 0L) {
+                        comentariosListagem.addView(TextView(this).apply {
+                            text = "Sem comentários."
+                            setPadding(8,8,8,8)
+                        })
+                    }
+                }
+                .addOnFailureListener {
+                    comentariosListagem.addView(TextView(this).apply {
+                        text = "Falha ao carregar comentários."
+                        setPadding(8,8,8,8)
+                    })
                 }
         }
+
+
+        // Envio de um novo comentário
         btnEnviar.setOnClickListener {
-            val user = auth.currentUser ?: return@setOnClickListener
-            val texto = edtComentario.text.toString()
+            val user = auth.currentUser
+            if (user == null) {
+                Toast.makeText(this, "Faça login para comentar.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            val texto = edtComentario.text.toString().trim()
             val av    = ratingBar.rating.toInt()
+            when {
+                av == 0 -> {
+                    Toast.makeText(this, "Escolha uma classificação!", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+                texto.isBlank() -> {
+                    edtComentario.error = "Comentário vazio"
+                    return@setOnClickListener
+                }
+            }
+            // grava
             database.child("Comentarios")
                 .child(estacaoId)
                 .child(user.uid)
                 .setValue(mapOf(
-                    "nome"       to (user.displayName ?: user.email),
+                    "nome"       to (user.displayName ?: user.email ?: "Anónimo"),
                     "comentario" to texto,
                     "avaliacao"  to av
                 ))
                 .addOnSuccessListener {
                     Toast.makeText(this, "Comentário enviado!", Toast.LENGTH_SHORT).show()
                     edtComentario.text.clear()
+                    ratingBar.rating = 0f
                     carregarComentarios()
                 }
+                .addOnFailureListener {
+                    Toast.makeText(this, "Erro ao enviar comentário.", Toast.LENGTH_SHORT).show()
+                }
         }
+
+        // 1ª carga
         carregarComentarios()
     }
+}
 }

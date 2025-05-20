@@ -5,7 +5,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object ApiClient {
     // Base URL do teu serviço Node.js
-    private const val BASE_URL = "http://10.0.2.2:3000/"
+    private const val BASE_URL = "https://railtrackpt-api.vercel.app/"
     // ↑ se estiveres no emulador usa 10.0.2.2, no device real põe o IP da máquina
 
     // Retrofit instance

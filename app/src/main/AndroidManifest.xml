@@ -15,7 +15,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.GuiaCaminhosFerro"
-        android:usesCleartextTraffic="true"
         >
 
         <activity
@@ -33,6 +32,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".SignupActivity"
+            android:label="Criar Conta" />
 
         <activity
             android:name=".ContextoHistoricoActivity"/>

@@ -1,38 +1,132 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:padding="8dp"
+    xmlns:card="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    card:cardCornerRadius="8dp"
+    card:cardElevation="2dp"
+    android:layout_margin="8dp">
 
-    <TextView
-        android:id="@+id/txtNumeroComboio"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Nº Comboio"
-        android:textStyle="bold"
-        android:textSize="16sp"/>
+    <LinearLayout
+        android:orientation="vertical"
+        android:padding="12dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/txtHorario"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Horário"
-        android:layout_marginTop="4dp"/>
+        <!-- Tipo -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
-    <TextView
-        android:id="@+id/txtTipoComboio"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Tipo"
-        android:layout_marginTop="4dp"/>
+            <TextView
+                android:id="@+id/labelTipo"
+                style="@style/TextAppearance.MaterialComponents.Body2"
+                android:textStyle="bold"
+                android:text="Tipo:"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
 
-    <TextView
-        android:id="@+id/txtPlataforma"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Plataforma"
-        android:layout_marginTop="4dp"/>
+            <TextView
+                android:id="@+id/tvTipo"
+                style="@style/TextAppearance.MaterialComponents.Body2"
+                android:layout_marginStart="4dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
 
-</LinearLayout>
+        <!-- Origem -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="4dp">
+
+            <TextView
+                android:id="@+id/labelOrigem"
+                style="@style/TextAppearance.MaterialComponents.Body2"
+                android:textStyle="bold"
+                android:text="Origem:"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:id="@+id/tvOrigem"
+                style="@style/TextAppearance.MaterialComponents.Body2"
+                android:layout_marginStart="4dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+        <!-- Destino -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="4dp">
+
+            <TextView
+                android:id="@+id/labelDestino"
+                style="@style/TextAppearance.MaterialComponents.Body2"
+                android:textStyle="bold"
+                android:text="Destino:"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:id="@+id/tvDestino"
+                style="@style/TextAppearance.MaterialComponents.Body2"
+                android:layout_marginStart="4dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+        <!-- Hora Chegada / Partida -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="4dp">
+
+            <TextView
+                android:id="@+id/labelHora"
+                style="@style/TextAppearance.MaterialComponents.Body2"
+                android:textStyle="bold"
+                android:text="Hora:"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:id="@+id/tvHora"
+                style="@style/TextAppearance.MaterialComponents.Body2"
+                android:layout_marginStart="4dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+        <!-- Plataforma -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="4dp">
+
+            <TextView
+                android:id="@+id/labelPlatform"
+                style="@style/TextAppearance.MaterialComponents.Body2"
+                android:textStyle="bold"
+                android:text="Plataforma:"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:id="@+id/tvPlatform"
+                style="@style/TextAppearance.MaterialComponents.Body2"
+                android:layout_marginStart="4dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

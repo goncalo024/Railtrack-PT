@@ -12,10 +12,11 @@ class ComboioAdapter(private val items: List<Comboio>) :
     RecyclerView.Adapter<ComboioAdapter.VH>() {
 
     inner class VH(view: View): RecyclerView.ViewHolder(view) {
-        val txtNumero: TextView = view.findViewById(R.id.txtNumeroComboio)
-        val txtHorario: TextView = view.findViewById(R.id.txtHorario)
-        val txtTipo: TextView   = view.findViewById(R.id.txtTipoComboio)
-        val txtPlataforma: TextView = view.findViewById(R.id.txtPlataforma)
+        val tvTipo       = view.findViewById<TextView>(R.id.tvTipo)
+        val tvOrigem     = view.findViewById<TextView>(R.id.tvOrigem)
+        val tvDestino    = view.findViewById<TextView>(R.id.tvDestino)
+        val tvHora       = view.findViewById<TextView>(R.id.tvHora)
+        val tvPlatform   = view.findViewById<TextView>(R.id.tvPlatform)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
@@ -24,12 +25,21 @@ class ComboioAdapter(private val items: List<Comboio>) :
         return VH(v)
     }
 
-    override fun onBindViewHolder(holder: VH, position: Int) {
-        val c = items[position]
-        holder.txtNumero.text = c.number
-        holder.txtHorario.text = "${c.departure} → ${c.arrival}"
-        holder.txtTipo.text = c.type
-        holder.txtPlataforma.text = "Plataforma ${c.platform}"
+    override fun onBindViewHolder(holder: VH, pos: Int) {
+        val c = items[pos]
+
+        holder.tvTipo.text = c.type.orEmpty()
+        holder.tvOrigem.text = c.origin.orEmpty()
+        holder.tvDestino.text = c.destination.orEmpty()
+
+        // exibe hora chegada ou partida, conforme o que existe
+        holder.tvHora.text = when {
+            !c.arrival.isNullOrEmpty()  -> "Chegada: ${c.arrival}"
+            !c.departure.isNullOrEmpty() -> "Saída: ${c.departure}"
+            else                         -> ""
+        }
+
+        holder.tvPlatform.text = c.platform?.let { it } ?: ""
     }
 
     override fun getItemCount() = items.size

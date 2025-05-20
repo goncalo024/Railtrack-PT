@@ -83,7 +83,7 @@ class EstacaoAdapter(
 
             holder.itemView.setOnClickListener {
                 val ctx = holder.itemView.context
-                val i = Intent(ctx, DetalheEstacaoActivity::class.java).apply {
+                val intent = Intent(ctx, DetalheEstacaoActivity::class.java).apply {
                     putExtra("estacaoId",         estacao.id)
                     putExtra("nome",              estacao.nome)
                     putExtra("morada",            estacao.morada)
@@ -98,7 +98,7 @@ class EstacaoAdapter(
                         ?: emptyList()
                     putStringArrayListExtra("imagens", ArrayList(imgs))
                 }
-                ctx.startActivity(i)
+                ctx.startActivity(intent)
             }
         } else if (holder is VerMaisViewHolder) {
             holder.btnVerMais.setOnClickListener {
