@@ -28,17 +28,25 @@
             android:layout_height="wrap_content"
             android:padding="16dp">
 
-            <!-- Container que vamos esconder se não houver imagens -->
             <FrameLayout
                 android:id="@+id/imageContainer"
                 android:layout_width="match_parent"
-                android:layout_height="220dp"
-                android:layout_marginTop="16dp">
+                android:layout_height="200dp">
 
+                <!-- ViewPager para imagens reais -->
                 <androidx.viewpager2.widget.ViewPager2
                     android:id="@+id/viewPagerImagens"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
+                    android:layout_height="match_parent"/>
+
+                <!-- Placeholder está por cima, visível só sem imagens -->
+                <ImageView
+                    android:id="@+id/ivPlaceholder"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/placeholder_imagem"
+                    android:contentDescription="Sem imagens disponíveis"/>
             </FrameLayout>
 
             <RelativeLayout

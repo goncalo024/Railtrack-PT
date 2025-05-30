@@ -50,48 +50,42 @@ class FavoritosActivity : AppCompatActivity() {
         val estacoesRef = FirebaseDatabase.getInstance()
             .getReference("Estacoes")
 
-        // 4) Buscar chaves de favoritos (só estacaoId)
+        // 4) Buscar chaves de favoritos
         favoritosRef.get()
             .addOnSuccessListener { favSnap ->
                 if (!favSnap.exists()) {
                     Toast.makeText(this, "Nenhum favorito guardado", Toast.LENGTH_SHORT).show()
                     return@addOnSuccessListener
                 }
-                val favIds = favSnap.children.mapNotNull { it.key }.toList()
-                if (favIds.isEmpty()) {
-                    Toast.makeText(this, "Nenhum favorito guardado", Toast.LENGTH_SHORT).show()
-                    return@addOnSuccessListener
-                }
+                // Conjunto de ids guardados como favoritos
+                val favIds = favSnap.children.mapNotNull { it.key }.toSet()
+                Log.d("FavsDebug", "Ids favoritos: $favIds")
 
-                // 5) Para cada favId, busca diretamente /Estacoes/{favId}
-                listaFavoritos.clear()
-                var carregados = 0
-                favIds.forEach { favId ->
-                    estacoesRef.child(favId).get()
-                        .addOnSuccessListener { estSnap ->
-                            estSnap.getValue(Estacao::class.java)
-                                ?.apply { id = favId }
-                                ?.let { listaFavoritos.add(it) }
-                        }
-                        .addOnCompleteListener {
-                            carregados++
-                            // Só atualiza o adapter quando já tentámos todos
-                            if (carregados == favIds.size) {
-                                if (listaFavoritos.isEmpty()) {
-                                    Toast.makeText(
-                                        this,
-                                        "Sem favoritos a mostrar",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
-                                estacaoAdapter.atualizarLista(listaFavoritos, mostrarBotao = false)
+                // 5) Buscar todas as estações e filtrar pelas que têm id em favIds
+                estacoesRef.get()
+                    .addOnSuccessListener { estSnap ->
+                        listaFavoritos.clear()
+                        for (child in estSnap.children) {
+                            // converte cada nó num objeto Estacao
+                            val est = child.getValue(Estacao::class.java)
+                            if (est != null && est.id != null && favIds.contains(est.id)) {
+                                listaFavoritos.add(est)
                             }
                         }
-                }
+
+                        if (listaFavoritos.isEmpty()) {
+                            Toast.makeText(this, "Sem favoritos a mostrar", Toast.LENGTH_SHORT).show()
+                        }
+                        estacaoAdapter.atualizarLista(listaFavoritos, mostrarBotao = false)
+                    }
+                    .addOnFailureListener { e ->
+                        Log.e("FavoritosActivity", "Erro ao carregar estações", e)
+                        Toast.makeText(this, "Erro ao carregar estações", Toast.LENGTH_SHORT).show()
+                    }
             }
             .addOnFailureListener { e ->
+                Log.e("FavoritosActivity", "Erro ao carregar favoritos", e)
                 Toast.makeText(this, "Erro ao carregar favoritos", Toast.LENGTH_SHORT).show()
-                Log.e("FavoritosActivity", "Erro ao buscar Favoritos", e)
             }
     }
 }
